@@ -1,5 +1,7 @@
+const getElementPrice = document.querySelector('.total-price');
 const getSelectSectionItems = document.querySelector('.items');
 const getCartList = document.querySelector('.cart__items');
+const getButtonClear = document.querySelector('.empty-cart');
 
 function createProductImageElement(imageSource) {
   const img = document.createElement('img');
@@ -17,7 +19,6 @@ function createCustomElement(element, className, innerText) {
 
 const getPriceProduct = (storage) => {
   const price = storage.reduce((acc, product) => acc + product.salePrice, 0);
-  const getElementPrice = document.querySelector('.total-price');
   getElementPrice.innerHTML = price; // .toLocaleString('pt-br', { style: 'currency', currency: 'BRL' });
 };
 
@@ -79,6 +80,13 @@ const getStorage = () => {
   storage.forEach((product) => getCartList.appendChild(createCartItemElement(product)));
   getPriceProduct(storage);
 };
+
+getButtonClear.addEventListener('click', () => {
+  localStorage.removeItem('cartItems');
+  localStorage.removeItem('price');
+  getCartList.innerHTML = '';
+  getElementPrice.innerHTML = '';
+});
 
 window.onload = () => {
   createProducts(fetchProducts('computador'));
