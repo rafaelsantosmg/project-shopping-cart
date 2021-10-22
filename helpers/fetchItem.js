@@ -3,8 +3,7 @@ const fetchItem = (itemId) => {
   if (!itemId) return error.message;
   return fetch(`https://api.mercadolibre.com/items/${itemId}`)
     .then((response) => response.json())
-    .then((data) => data)
-    .catch((err) => err);
+    .then((data) => data);
 };
 
 if (typeof module !== 'undefined') module.exports = { fetchItem };
