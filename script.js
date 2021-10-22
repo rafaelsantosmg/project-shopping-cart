@@ -2,6 +2,12 @@ const getElementPrice = document.querySelector('.total-price');
 const getSelectSectionItems = document.querySelector('.items');
 const getCartList = document.querySelector('.cart__items');
 const getButtonClear = document.querySelector('.empty-cart');
+const getLoading = document.querySelector('.loading');
+
+const messageLoader = (message, remove) => {
+  if (remove) return getLoading.remove();
+  getLoading.innerHTML = message;
+};
 
 function createProductImageElement(imageSource) {
   const img = document.createElement('img');
@@ -64,11 +70,13 @@ function createProductItemElement({ sku, name, image }) {
 }
 
 const createProducts = async (fetchProducts) => {
+  messageLoader('carregando');
   try {
     const data = await fetchProducts;
     data.results.forEach((product) => {
       const { id: sku, title: name, thumbnail: image } = product;
       getSelectSectionItems.appendChild(createProductItemElement({ sku, name, image }));
+      messageLoader('', true);
     });
   } catch (err) {
     console.log(err);
