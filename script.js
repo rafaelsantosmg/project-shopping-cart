@@ -15,12 +15,19 @@ function createCustomElement(element, className, innerText) {
   return e;
 }
 
+const getPriceProduct = (storage) => {
+  const price = storage.reduce((acc, product) => acc + product.salePrice, 0);
+  const getElementPrice = document.querySelector('.total-price');
+  getElementPrice.innerHTML = price; // .toLocaleString('pt-br', { style: 'currency', currency: 'BRL' });
+};
+
 function cartItemClickListener(event, sku) {
   event.target.remove();
   const storage = JSON.parse(localStorage.getItem('cartItems'));
   const findCartProduct = storage.find((product) => product.sku === sku);
   const findCartIndex = storage.indexOf(findCartProduct);
   storage.splice(findCartIndex, 1);
+  getPriceProduct(storage);
   saveCartItems(JSON.stringify(storage));
 }
 
@@ -38,6 +45,7 @@ const getProductCart = async (sku) => {
   const { title: name, price: salePrice } = data;
   getCartList.appendChild(createCartItemElement({ sku, name, salePrice }));
   storage.push({ sku, name, salePrice });
+  getPriceProduct(storage);
   saveCartItems(JSON.stringify(storage));
 };
 
@@ -54,10 +62,6 @@ function createProductItemElement({ sku, name, image }) {
   return section;
 }
 
-function getSkuFromProductItem(item) {
-  return item.querySelector('span.item__sku').innerText;
-}
-
 const createProducts = async (fetchProducts) => {
   try {
     const data = await fetchProducts;
@@ -72,8 +76,8 @@ const createProducts = async (fetchProducts) => {
 
 const getStorage = () => {
   const storage = JSON.parse(getSavedCartItems());
-  console.log(storage);
   storage.forEach((product) => getCartList.appendChild(createCartItemElement(product)));
+  getPriceProduct(storage);
 };
 
 window.onload = () => {
