@@ -1,17 +1,18 @@
 const getElementPrice = document.querySelector('.total-price');
-const getSelectSectionItems = document.querySelector('.items');
+const getSelectSectionItems = document.querySelector('.card-container');
 const getCartList = document.querySelector('.cart__items');
 const getButtonClear = document.querySelector('.empty-cart');
-const getLoading = document.querySelector('.loading');
+const getLoading = document.querySelector('.spinner-border');
 
-const messageLoader = (message, remove) => {
+const messageLoader = (remove) => {
   if (remove) return getLoading.remove();
-  getLoading.innerHTML = message;
+  return getLoading;
 };
 
 function createProductImageElement(imageSource) {
   const img = document.createElement('img');
-  img.className = 'item__image';
+  img.className = 'card-img-top';
+  img.style.width = '10rem';
   img.src = imageSource;
   return img;
 }
@@ -25,7 +26,7 @@ function createCustomElement(element, className, innerText) {
 
 const getPriceProduct = (storage) => {
   const price = storage.reduce((acc, product) => acc + product.salePrice, 0);
-  getElementPrice.innerHTML = price; // .toLocaleString('pt-br', { style: 'currency', currency: 'BRL' });
+  getElementPrice.innerHTML = price.toLocaleString('pt-br', { style: 'currency', currency: 'BRL' });
 };
 
 function cartItemClickListener(event, sku) {
@@ -40,7 +41,7 @@ function cartItemClickListener(event, sku) {
 
 function createCartItemElement({ sku, name, salePrice }) {  
   const li = document.createElement('li');
-  li.className = 'cart__item';
+  li.className = 'list-group-item';
   li.innerText = `SKU: ${sku} | NAME: ${name} | PRICE: $${salePrice}`;
   li.addEventListener('click', (event) => cartItemClickListener(event, sku));
   return li;
@@ -57,26 +58,33 @@ const getProductCart = async (sku) => {
 };
 
 function createProductItemElement({ sku, name, image }) {
-  const section = document.createElement('section');
-  section.className = 'item';
-  section.appendChild(createCustomElement('span', 'item__sku', sku));
-  section.appendChild(createCustomElement('span', 'item__title', name));
-  section.appendChild(createProductImageElement(image));
-  const createButton = createCustomElement('button', 'item__add', 'Adicionar ao carrinho!');
+  const divCard = document.createElement('div');
+  const divBody = document.createElement('div');
+  divCard.className = 'card';
+  divCard.style.width = '14rem';
+  divCard.style.margin = '5px';
+  divCard.style.padding = '3px 0 10px 0';
+  divCard.style.alignItems = 'center';
+  divBody.className = 'card-body';
+  divBody.appendChild(createCustomElement('p', 'card-text', sku));
+  divBody.appendChild(createCustomElement('h5', 'card-title', name));
+  const createButton = createCustomElement('button', 'btn btn-success', 'Adicionar ao carrinho!');
   createButton.addEventListener('click', () => getProductCart(sku));
-  section.appendChild(createButton);
+  divCard.appendChild(createProductImageElement(image));
+  divCard.appendChild(divBody);
+  divCard.appendChild(createButton);
 
-  return section;
+  return divCard;
 }
 
 const createProducts = async (fetchProducts) => {
-  messageLoader('carregando');
+  messageLoader();
   try {
     const data = await fetchProducts;
     data.results.forEach((product) => {
       const { id: sku, title: name, thumbnail: image } = product;
       getSelectSectionItems.appendChild(createProductItemElement({ sku, name, image }));
-      messageLoader('', true);
+      messageLoader(true);
     });
   } catch (err) {
     console.log(err);
@@ -93,7 +101,7 @@ getButtonClear.addEventListener('click', () => {
   localStorage.removeItem('cartItems');
   localStorage.removeItem('price');
   getCartList.innerHTML = '';
-  getElementPrice.innerHTML = '';
+  getElementPrice.innerHTML = 'R$ 0,00';
 });
 
 window.onload = () => {
