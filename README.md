@@ -1,7 +1,7 @@
 
 # Shopping Cart
 
-Projeto de conclusão de Fundamentos WEB.
+Projeto de conclusão de Fundamentos WEB, utilizando BootStrap.
 
 ## Habilidades Desenvolvidas
 
